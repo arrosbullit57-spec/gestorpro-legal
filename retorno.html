@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Volviendo a GestorPro…</title>
+<style>
+  body { margin: 0; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1d2330; background: #f5f6f8; display: grid; place-items: center; min-height: 100vh; }
+  .caja { background: #fff; border: 1px solid #e3e6ec; border-radius: 14px; padding: 28px 32px; max-width: 520px; text-align: center; }
+  a.btn { display: inline-block; margin-top: 12px; padding: 9px 16px; background: #1f4fa0; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; }
+  .nota { color: #667085; font-size: 14px; }
+</style>
+</head>
+<body><div class="caja" id="caja"><h2>Volviendo a GestorPro…</h2><p class="nota">El banco ha terminado la autorización. Te llevamos de vuelta al programa en tu ordenador.</p></div>
+<script>
+  // Puente HTTPS → GestorPro local. El banco solo puede redirigir a una dirección https, y GestorPro
+  // funciona en http://localhost; el puerto viene codificado al final del parámetro «state» (gp_xxx_8770).
+  var q = new URLSearchParams(location.search);
+  var st = q.get("state") || "";
+  var m = st.match(/_(\d{2,5})$/);
+  var puerto = m ? m[1] : "8770";
+  var destino = "http://localhost:" + puerto + "/banco/retorno?" + q.toString();
+  var caja = document.getElementById("caja");
+  if (q.get("code") || q.get("error")) {
+    location.replace(destino);
+    setTimeout(function () {
+      caja.innerHTML += '<p class="nota">Si GestorPro no se abre solo, asegúrate de que está en marcha en este ordenador y pulsa:</p><a class="btn" href="' + destino + '">Abrir GestorPro</a>';
+    }, 1500);
+  } else {
+    caja.innerHTML = '<h2>Nada que hacer</h2><p class="nota">Esta página solo sirve para volver a GestorPro después de autorizar un banco.</p>';
+  }
+</script>
+</body>
+</html>
